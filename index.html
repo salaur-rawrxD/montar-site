@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONTAR — AI for car-hauler execution · Pilot live</title>
+  <meta name="description" content="MONTAR is driver-native AI for load planning, yard routing, and dealer delivery—new, used, and POV. Pilot: 7 trucks. Seattle. MONTAR.run">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=Space+Grotesk:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   MD3 TOKENS
+═══════════════════════════════════ */
+:root{
+  --brand:#E8620A;--brand-dk:#B84A00;--brand-lt:#FFF0E6;--brand-on:#fff;
+  --surf:#FAFAF8;--surf1:#F4F2EE;--surf2:#EDEAE5;--surf3:#E5E1DA;--surf-inv:#1C1B18;
+  --on:#1C1B18;--on-v:#4A4740;--on-d:#8A8580;
+  --err:#B3261E;--err-bg:#FDE8E8;--ok:#1A7A52;--ok-bg:#E6F4ED;--warn:#7A5500;--warn-bg:#FFF3D6;
+  --e1:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.08);
+  --e2:0 1px 2px rgba(0,0,0,.06),0 3px 8px rgba(0,0,0,.1);
+  --e3:0 4px 12px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.06);
+  --fd:'Space Grotesk',sans-serif;--fb:'Nunito Sans',sans-serif;--fm:'Roboto Mono',monospace;
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--rpill:9999px;
+  --pad:clamp(1.25rem,5vw,3.5rem);--max:1200px;--ease:cubic-bezier(.2,0,0,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--surf);color:var(--on);font-family:var(--fb);font-weight:400;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--surf1)}::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+img,svg{display:block;max-width:100%}
+
+/* ── reveal ── */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.on{opacity:1;transform:none}
+
+/* ═══════════════════════════════════
+   NAV
+═══════════════════════════════════ */
+#nav{position:fixed;inset:0 0 auto;z-index:300;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);background:rgba(250,250,248,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+#nav.up{border-color:var(--surf2);box-shadow:var(--e1)}
+.nav-logo{font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--brand);text-decoration:none;letter-spacing:-.01em}
+.nav-links{display:flex;flex-wrap:wrap;gap:1.15rem 1.35rem;list-style:none;justify-content:flex-end}
+.nav-links a{font-family:var(--fb);font-size:.875rem;font-weight:700;color:var(--on-v);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--brand)}
+.nav-cta{font-family:var(--fb);font-size:.875rem;font-weight:700;color:#fff;background:var(--brand);padding:.5rem 1.4rem;border-radius:var(--rpill);text-decoration:none;box-shadow:var(--e1);transition:background .2s,transform .2s var(--ease),box-shadow .2s;white-space:nowrap}
+.nav-cta:hover{background:var(--brand-dk);box-shadow:var(--e2);transform:translateY(-1px)}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* ═══════════════════════════════════
+   HERO
+═══════════════════════════════════ */
+#hero{min-height:100svh;padding-top:64px;display:grid;grid-template-columns:1fr 1fr}
+.hl{display:flex;flex-direction:column;justify-content:center;padding:clamp(3rem,6vw,6rem) var(--pad) clamp(3rem,6vw,5rem);background:var(--surf)}
+.h-eye{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--fm);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:1.5rem;opacity:0;animation:fup .6s var(--ease) .1s forwards}
+.eye-dot{width:6px;height:6px;background:var(--brand);border-radius:50%}
+.h-h1{font-family:var(--fd);font-size:clamp(2.4rem,4.5vw,4.5rem);font-weight:700;line-height:1.08;letter-spacing:-.025em;color:var(--on);margin-bottom:1.5rem;opacity:0;animation:fup .7s var(--ease) .22s forwards}
+.h-h1 em{color:var(--brand);font-style:normal}
+.h-lead{font-size:1.05rem;font-weight:700;color:var(--on);line-height:1.45;max-width:520px;margin-bottom:1rem;opacity:0;animation:fup .7s var(--ease) .34s forwards}
+.h-lead em{font-style:normal;color:var(--brand)}
+.h-sub{font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.78;color:var(--on-v);max-width:480px;margin-bottom:2.5rem;opacity:0;animation:fup .7s var(--ease) .42s forwards}
+.h-sub strong{color:var(--on);font-weight:700}
+.h-acts{display:flex;gap:.875rem;flex-wrap:wrap;opacity:0;animation:fup .7s var(--ease) .5s forwards}
+.btn-f{display:inline-flex;align-items:center;font-family:var(--fb);font-size:.9375rem;font-weight:700;color:#fff;background:var(--brand);padding:.75rem 1.75rem;border-radius:var(--rpill);text-decoration:none;box-shadow:var(--e1);transition:background .2s,transform .2s var(--ease),box-shadow .2s;white-space:nowrap}
+.btn-f:hover{background:var(--brand-dk);transform:translateY(-2px);box-shadow:var(--e3)}
+.btn-t{display:inline-flex;align-items:center;font-family:var(--fb);font-size:.9375rem;font-weight:700;color:var(--brand);background:var(--brand-lt);padding:.75rem 1.75rem;border-radius:var(--rpill);text-decoration:none;transition:background .2s,transform .2s var(--ease);white-space:nowrap}
+.btn-t:hover{background:#FFE0CC;transform:translateY(-2px)}
+.hr{background:var(--surf1);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:clamp(3rem,6vw,5rem) var(--pad);border-left:1px solid var(--surf2);position:relative;overflow:hidden}
+.hr::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--surf2) 1px,transparent 1px),linear-gradient(90deg,var(--surf2) 1px,transparent 1px);background-size:40px 40px;opacity:.5}
+.hr-inner{position:relative;z-index:1;width:100%;max-width:440px}
+.h-stats{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;opacity:0;animation:fup .7s var(--ease) .6s forwards}
+.hs{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.25rem 1.5rem;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.hs:hover{box-shadow:var(--e2);transform:translateY(-2px)}
+.hs-n{font-family:var(--fd);font-size:1.75rem;font-weight:700;color:var(--brand);line-height:1;margin-bottom:.25rem}
+.hs-l{font-size:.72rem;color:var(--on-d);font-weight:700;line-height:1.4}
+.zero-card{background:var(--brand);border-radius:var(--r24);padding:1.5rem 1.75rem;display:flex;align-items:center;gap:1rem;opacity:0;animation:fup .7s var(--ease) .76s forwards}
+.zero-n{font-family:var(--fd);font-size:3.5rem;font-weight:700;color:#fff;line-height:1}
+.zero-d{font-size:.875rem;color:rgba(255,255,255,.82);line-height:1.5;font-weight:600}
+.zero-d strong{color:#fff;font-weight:700}
+@media(max-width:900px){#hero{grid-template-columns:1fr}.hr{border-left:none;border-top:1px solid var(--surf2);padding:2.5rem var(--pad);min-height:0}}
+
+/* ═══════════════════════════════════
+   MARQUEE
+═══════════════════════════════════ */
+.marquee{background:var(--brand);overflow:hidden;padding:.6rem 0;white-space:nowrap}
+.m-inner{display:inline-flex;animation:scrollx 34s linear infinite}
+.m-inner:hover{animation-play-state:paused}
+.mi{font-family:var(--fm);font-size:.66rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);padding:0 1.5rem;display:inline-flex;align-items:center;gap:.6rem;flex-shrink:0}
+.mi-dot{width:3px;height:3px;background:rgba(255,255,255,.4);border-radius:50%}
+
+/* ═══════════════════════════════════
+   THESIS (investor scan)
+═══════════════════════════════════ */
+#thesis{background:var(--surf-inv);color:var(--surf);padding:clamp(1.75rem,4vw,2.25rem) var(--pad);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.thesis-g{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(1.25rem,3vw,2rem);align-items:start}
+.thesis-it{border-left:3px solid var(--brand);padding-left:1rem;min-width:0}
+.thesis-k{font-family:var(--fm);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:.4rem;font-weight:500}
+.thesis-v{font-family:var(--fd);font-size:clamp(.95rem,1.2vw,1.05rem);font-weight:700;line-height:1.3;color:#fff}
+.thesis-s{font-size:.78rem;color:rgba(255,255,255,.52);margin-top:.4rem;line-height:1.5}
+@media(max-width:900px){.thesis-g{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.thesis-g{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   SECTION SHELL
+═══════════════════════════════════ */
+.sec{padding:clamp(4rem,7vw,7rem) var(--pad)}
+.si{max-width:var(--max);margin:0 auto}
+.chip{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.66rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);background:var(--brand-lt);padding:.28rem .85rem;border-radius:var(--rpill);margin-bottom:1.1rem}
+.sh{font-family:var(--fd);font-size:clamp(1.75rem,3.2vw,3rem);font-weight:700;letter-spacing:-.022em;line-height:1.1;color:var(--on);margin-bottom:1rem}
+.sh--pilot{margin-bottom:2.5rem}
+.sh em{color:var(--brand);font-style:normal}
+.sb{font-size:1rem;line-height:1.78;color:var(--on-v);max-width:580px}
+.sb strong{color:var(--on);font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2.5rem,5vw,5rem);align-items:start}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   WORLD
+═══════════════════════════════════ */
+#world{background:var(--surf)}
+.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:2rem}
+.sc{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.25rem 1.5rem;box-shadow:var(--e1);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s var(--ease)}
+.sc:hover{box-shadow:var(--e3);transform:translateY(-2px)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--brand)}
+.sc-n{font-family:var(--fd);font-size:1.75rem;font-weight:700;color:var(--brand);display:block;line-height:1;margin-bottom:.25rem}
+.sc-l{font-size:.72rem;color:var(--on-d);line-height:1.4;font-weight:700}
+.bol-wrap{position:sticky;top:80px}
+.bol-tag{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--fm);font-size:.62rem;color:var(--on-d);margin-bottom:.6rem}
+.bol-pulse{width:7px;height:7px;background:var(--brand);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+.bol-doc{background:#FAFAF8;border:1px solid #E0DDD7;border-radius:var(--r12);overflow:hidden;box-shadow:var(--e3);font-family:var(--fm);font-size:clamp(.48rem,.62vw,.64rem);color:#1C1B18;transform:rotate(-.3deg);transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+.bol-doc:hover{transform:rotate(0) translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.14)}
+.bol-hd{background:var(--surf-inv);color:var(--surf);padding:.6rem 1.1rem;display:flex;justify-content:space-between;align-items:center}
+.bol-hd-l{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.bol-hd-r{font-size:.5rem;color:var(--brand);letter-spacing:.08em}
+.bol-bd{padding:1rem 1.1rem}
+.bol-title{text-align:center;font-size:.58rem;font-weight:700;border-bottom:1px solid #D5D2CC;padding-bottom:.4rem;margin-bottom:.4rem;letter-spacing:.04em}
+.bol-meta{font-size:.48rem;color:#7A7570;border-bottom:1px solid #E8E5DF;padding-bottom:.3rem;margin-bottom:.3rem}
+.bol-row{display:grid;grid-template-columns:1.7fr 1.2fr .65fr .38fr .62fr .65fr;gap:.2rem;font-size:.5rem;padding:.18rem 0;border-bottom:1px solid #F0EDE7;align-items:center}
+.bol-row.hd{font-weight:700;color:#4A4740;border-bottom:1px solid #D5D2CC;padding-bottom:.28rem;margin-bottom:.18rem}
+.bol-row:last-of-type{border:none}
+.bv{font-weight:700;color:#1C1B18}.bl{color:var(--brand);font-weight:700}
+.bol-foot{font-size:.46rem;color:#9A9590;border-top:1px solid #D5D2CC;padding-top:.3rem;margin-top:.3rem}
+.bol-cap{font-size:.875rem;color:var(--brand);line-height:1.55;margin-top:.8rem;font-style:italic}
+.insight{background:var(--brand-lt);border:1px solid rgba(232,98,10,.18);border-left:4px solid var(--brand);border-radius:var(--r12);padding:1.1rem 1.4rem;margin-top:1.2rem}
+.in-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:.4rem;font-weight:500}
+.in-txt{font-size:.875rem;color:var(--on-v);line-height:1.65}
+.in-txt strong{color:var(--on);font-weight:700}
+@media(max-width:900px){.bol-wrap{position:static}}
+
+/* ═══════════════════════════════════
+   COST / FINANCIAL IMPACT
+═══════════════════════════════════ */
+#cost{background:var(--surf1);border-top:1px solid var(--surf2)}
+.cost-hdr{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:2.5rem}
+@media(max-width:900px){.cost-hdr{grid-template-columns:1fr}}
+.impact-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.impact-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:1.75rem;box-shadow:var(--e1);text-align:center;transition:box-shadow .2s,transform .2s var(--ease)}
+.impact-card:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.ic-icon{width:48px;height:48px;border-radius:var(--r12);display:flex;align-items:center;justify-content:center;margin:0 auto .875rem;font-size:1.5rem}
+.ic-icon.loss{background:var(--err-bg)}.ic-icon.time{background:var(--warn-bg)}.ic-icon.gain{background:var(--ok-bg)}
+.ic-n{font-family:var(--fd);font-size:2rem;font-weight:700;line-height:1;margin-bottom:.3rem}
+.ic-n.red{color:var(--err)}.ic-n.amber{color:var(--warn)}.ic-n.grn{color:var(--ok)}
+.ic-lbl{font-size:.78rem;color:var(--on-d);font-weight:700;line-height:1.4}
+@media(max-width:600px){.impact-row{grid-template-columns:1fr}}
+.calc-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:clamp(1.5rem,3vw,2.5rem);box-shadow:var(--e2);margin-bottom:1.5rem}
+.calc-head{display:flex;align-items:center;gap:.75rem;margin-bottom:.3rem}
+.calc-badge{display:inline-block;background:var(--brand-lt);border-radius:var(--r8);padding:.25rem .65rem;font-family:var(--fm);font-size:.6rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em}
+.calc-badge--fleet{background:#EAF5FF;color:#0066BB}
+.calc-ttl{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--on);margin-bottom:.3rem}
+.calc-sub{font-size:.875rem;color:var(--on-d);margin-bottom:1.75rem}
+#route-hint{font-family:var(--fm);font-size:.68rem;color:var(--brand);background:var(--brand-lt);border-radius:var(--r8);padding:.5rem .875rem;margin-bottom:1.25rem}
+.ctrl-scale{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem;color:var(--on-d);margin-top:.25rem}
+.ctrls{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem 2rem;margin-bottom:1.75rem}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:.8125rem;font-weight:700;color:var(--on-v);margin-bottom:.5rem}
+.cv{font-family:var(--fm);font-size:.875rem;color:var(--brand);font-weight:500}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;background:var(--surf2);border-radius:4px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--brand);box-shadow:var(--e2);cursor:pointer;transition:transform .15s var(--ease)}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--brand);border:none;cursor:pointer}
+.res-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.res-row--fleet{grid-template-columns:repeat(4,1fr)}
+.res-card{border-radius:var(--r16);padding:1.25rem;text-align:center}
+.res-card.pot{background:var(--ok-bg);border:1px solid rgba(26,122,82,.15)}
+.res-card.tl{background:var(--warn-bg);border:1px solid rgba(122,85,0,.15)}
+.res-card.ml{background:var(--err-bg);border:1px solid rgba(179,38,30,.15)}
+.res-card.annual{background:var(--err-bg);border:1px solid rgba(179,38,30,.15)}
+.res-card.annual .res-n{color:var(--err)}
+.res-lbl{font-size:.7rem;font-weight:700;color:var(--on-d);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em}
+.res-n{font-family:var(--fd);font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:.25rem}
+.res-card.pot .res-n{color:var(--ok)}.res-card.tl .res-n{color:var(--warn)}.res-card.ml .res-n{color:var(--err)}
+.res-sub{font-size:.7rem;color:var(--on-d)}
+@media(max-width:600px){.ctrls{grid-template-columns:1fr}.res-row,.res-row--fleet{grid-template-columns:1fr}}
+.chart-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:clamp(1.5rem,3vw,2.5rem);box-shadow:var(--e1)}
+.donuts-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.75rem,4vw,3rem);align-items:start}
+.donut-panel{min-width:0}
+.loss-hint{font-size:.8125rem;color:var(--on-v);line-height:1.55;margin-bottom:1.25rem;max-width:42ch}
+.loss-hint strong{color:var(--on);font-weight:700}
+.loss-ctrls{display:flex;flex-direction:column;gap:.85rem;margin-bottom:1.5rem}
+.loss-ctrls .ctrl{margin-bottom:0}
+.hos-title{font-family:var(--fm);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-d);font-weight:500;margin-bottom:1.5rem}
+.donut-mid{font-family:var(--fd);font-size:1.4rem;font-weight:700;color:var(--on);line-height:1}
+.donut-mid-sub{font-size:.62rem;color:var(--on-d);font-weight:700;margin-top:.2rem;text-align:center}
+.dl-callout{margin-top:.75rem;padding:.6rem .75rem;background:var(--ok-bg);border-radius:var(--r8);border-left:3px solid var(--ok)}
+.dl-callout-lbl{font-family:var(--fm);font-size:.62rem;color:var(--ok);font-weight:700}
+.dl-callout-txt{font-size:.78rem;color:var(--on-v);margin-top:.2rem}
+.time-split{display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:center}
+.donut-wrap{position:relative;width:180px;height:180px;flex-shrink:0}
+.donut-wrap svg{transform:rotate(-90deg)}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.dn{font-family:var(--fd);font-size:1.9rem;font-weight:700;color:var(--err);line-height:1}
+.dl{font-size:.7rem;color:var(--on-d);font-weight:700;margin-top:.2rem}
+.donut-legend{display:flex;flex-direction:column;gap:.75rem}
+.dl-item{display:flex;align-items:center;gap:.7rem}
+.dl-sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.dl-sw--drv{background:#81C995}.dl-sw--brk{background:#FDD663}.dl-sw--ineff{background:#F28B82}.dl-sw--buf{background:#EDEAE5}
+.dl-sw--lr{background:var(--err)}.dl-sw--ld{background:#E65100}.dl-sw--lb{background:#5E35B1}
+.dl-tn{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--on)}
+.dl-tl{font-size:.75rem;color:var(--on-d);font-weight:700}
+@media(max-width:900px){.donuts-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.time-split{grid-template-columns:1fr}.donut-wrap{margin:0 auto}}
+
+/* ═══════════════════════════════════
+   PROBLEM
+═══════════════════════════════════ */
+#problem{background:var(--surf)}
+.prob-hdr{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:2.5rem}
+@media(max-width:900px){.prob-hdr{grid-template-columns:1fr}}
+.moments{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.moment{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);overflow:hidden;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.moment:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.m-stripe{height:4px;background:var(--brand)}
+.m-body{padding:1.75rem}
+.m-chip{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--brand-lt);border-radius:var(--r12);font-family:var(--fm);font-size:.7rem;font-weight:700;color:var(--brand);margin-bottom:1rem}
+.m-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:500;margin-bottom:.5rem}
+.m-ttl{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--on);line-height:1.25;margin-bottom:.75rem;letter-spacing:-.01em}
+.m-cost{display:flex;align-items:flex-start;gap:.5rem;background:var(--err-bg);border-radius:var(--r8);padding:.5rem .75rem;margin-bottom:.875rem}
+.m-ci{font-size:1rem}
+.m-ct{font-family:var(--fm);font-size:.7rem;color:var(--err);font-weight:500;line-height:1.45}
+.m-p{font-size:.875rem;color:var(--on-v);line-height:1.72}
+.m-p strong{color:var(--on);font-weight:700}
+@media(max-width:900px){.moments{grid-template-columns:1fr}}
+.pullquote{margin-top:2.5rem;background:var(--brand);border-radius:var(--r24);padding:clamp(2rem,3vw,3rem);display:flex;gap:1.25rem;align-items:flex-start}
+.pq-mk{font-size:4rem;line-height:.75;color:rgba(255,255,255,.22);font-style:italic;flex-shrink:0;font-family:Georgia,serif}
+.pq-tx{font-size:clamp(.95rem,1.35vw,1.15rem);color:rgba(255,255,255,.9);line-height:1.62;font-style:italic}
+
+/* ═══════════════════════════════════
+   SOLUTION
+═══════════════════════════════════ */
+#solution{background:var(--surf1);border-top:1px solid var(--surf2)}
+.sol-hdr{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:2.5rem}
+@media(max-width:900px){.sol-hdr{grid-template-columns:1fr}}
+.sol-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}@media(max-width:860px){.sol-cards{grid-template-columns:1fr}}
+.sol-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);overflow:hidden;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.sol-card:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.sol-top{height:4px;background:var(--brand)}
+.sol-bd{padding:1.75rem}
+.sol-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:500;margin-bottom:.4rem}
+.sol-ttl{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--on);line-height:1.25;margin-bottom:.875rem}
+.sol-p{font-size:.9rem;color:var(--on-v);line-height:1.75}
+.sol-p strong{color:var(--on);font-weight:700}
+@media(max-width:600px){.sol-cards{grid-template-columns:1fr}}
+.collab-card{background:var(--surf-inv);border-radius:var(--r24);padding:clamp(2rem,3vw,3rem);display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;margin-bottom:1rem}
+.collab-hl{font-family:var(--fd);font-size:clamp(1.25rem,2vw,1.75rem);font-weight:700;color:var(--surf);line-height:1.15;letter-spacing:-.02em;white-space:nowrap}
+.collab-hl span{color:var(--brand)}
+.collab-p{font-size:.9375rem;color:rgba(255,255,255,.62);line-height:1.78}
+.collab-p strong{color:var(--surf);font-weight:700}
+@media(max-width:600px){.collab-card{grid-template-columns:1fr}.collab-hl{white-space:normal}}
+.formats-card{background:var(--brand-lt);border:1px solid rgba(232,98,10,.18);border-left:4px solid var(--brand);border-radius:var(--r16);padding:1.2rem 1.75rem;display:flex;gap:1.25rem;align-items:baseline;flex-wrap:wrap;margin-bottom:1.5rem}
+.fmt-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:500;white-space:nowrap;flex-shrink:0}
+.fmt-p{font-size:.9rem;color:var(--on-v);line-height:1.65}
+.fmt-p strong{color:var(--on);font-weight:700}
+.outcomes{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.out{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.25rem;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.out:hover{box-shadow:var(--e2);transform:translateY(-2px)}
+.out-ic{font-size:1.4rem;margin-bottom:.6rem}
+.out-t{font-size:.9rem;font-weight:700;color:var(--on);margin-bottom:.3rem}
+.out-b{font-size:.78rem;color:var(--on-d);line-height:1.6}
+@media(max-width:900px){.outcomes{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.outcomes{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   TEAM
+═══════════════════════════════════ */
+#team{background:var(--surf)}
+.team-hdr{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:2.5rem}
+@media(max-width:900px){.team-hdr{grid-template-columns:1fr}}
+.people{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;align-items:stretch}
+.cof-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:1.75rem;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.cof-card:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.cof-k{font-family:var(--fd);font-size:1.05rem;font-weight:700;color:var(--on);margin-bottom:.75rem;letter-spacing:-.01em}
+.cof-bio{font-size:.9rem;color:var(--on-v);line-height:1.78}
+.cof-bio strong{color:var(--on);font-weight:700}
+.pcard{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);overflow:hidden;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.pcard:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.p-top{background:var(--surf-inv);padding:1.5rem 1.75rem;display:flex;align-items:center;gap:1rem}
+.avatar{width:52px;height:52px;background:var(--brand);border-radius:var(--r12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.avatar span{font-family:var(--fd);font-size:1rem;font-weight:700;color:#fff}
+.p-name{font-family:var(--fd);font-size:1.2rem;font-weight:700;color:var(--surf);margin-bottom:.2rem}
+.p-role{font-size:.75rem;color:rgba(255,255,255,.5);font-weight:600;line-height:1.4}
+.p-bio-wrap{padding:1.75rem}
+.p-bio{font-size:.9rem;color:var(--on-v);line-height:1.78}
+.p-bio strong{color:var(--on);font-weight:700}
+@media(max-width:900px){.people{grid-template-columns:1fr}}
+.caps{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.cap{background:var(--surf1);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.25rem;transition:box-shadow .2s,transform .2s var(--ease)}
+.cap:hover{box-shadow:var(--e2);transform:translateY(-2px)}
+.cap-n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--brand-lt);border-radius:var(--r8);font-family:var(--fm);font-size:.65rem;color:var(--brand);font-weight:700;margin-bottom:.75rem}
+.cap-t{font-size:.9rem;font-weight:700;color:var(--on);margin-bottom:.3rem}
+.cap-b{font-size:.78rem;color:var(--on-d);line-height:1.6}
+@media(max-width:900px){.caps{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.caps{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   PILOT
+═══════════════════════════════════ */
+#pilot{background:var(--surf1);border-top:1px solid var(--surf2)}
+.phases{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:2.5rem 0}
+.phase{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);overflow:hidden;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.phase:hover{box-shadow:var(--e3);transform:translateY(-3px)}
+.ph-stripe{height:4px}
+.p1 .ph-stripe{background:var(--ok)}.p2 .ph-stripe{background:var(--brand)}
+.ph-in{padding:2rem}
+.ph-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-d);font-weight:500;margin-bottom:.4rem}
+.ph-name{font-family:var(--fd);font-size:1.35rem;font-weight:700;color:var(--on);letter-spacing:-.01em;line-height:1.2;margin-bottom:1rem}
+.ph-p{font-size:.9rem;color:var(--on-v);line-height:1.75}
+.ph-p strong{color:var(--on);font-weight:700}
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.65rem;font-weight:500;padding:.3rem .8rem;border-radius:var(--rpill);margin-top:1.25rem}
+.badge.a{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(26,122,82,.18)}
+.badge.c{background:var(--brand-lt);color:var(--brand-dk);border:1px solid rgba(232,98,10,.18)}
+.bdot{width:5px;height:5px;border-radius:50%}
+.badge.a .bdot{background:var(--ok);animation:pulse 1.5s infinite}
+.badge.c .bdot{background:var(--brand)}
+@media(max-width:600px){.phases{grid-template-columns:1fr}}
+.origins-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:clamp(1.5rem,3vw,2.5rem);box-shadow:var(--e1)}
+.or-hd{font-family:var(--fm);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:500;margin-bottom:1.75rem}
+.or-cols{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.or-reg{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-d);font-weight:500;padding-bottom:.6rem;border-bottom:1px solid var(--surf2);margin-bottom:.875rem}
+.or-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.or-list li{display:flex;gap:.6rem;align-items:baseline;font-size:.875rem;color:var(--on-v);line-height:1.5}
+.or-list li::before{content:'';width:5px;height:5px;background:var(--brand);border-radius:50%;flex-shrink:0;margin-top:.42rem}
+.or-list strong{color:var(--on);font-weight:700}
+@media(max-width:600px){.or-cols{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   VISION
+═══════════════════════════════════ */
+#vision{background:var(--surf)}
+.vis-g{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2.5rem,5vw,5rem);align-items:start}
+@media(max-width:900px){.vis-g{grid-template-columns:1fr}}
+.roadmap{margin-top:2rem}
+.rm{display:grid;grid-template-columns:32px 1fr;gap:1rem;padding-bottom:1.75rem}
+.rm:last-child{padding-bottom:0}
+.rm-tr{display:flex;flex-direction:column;align-items:center;padding-top:3px}
+.rm-dot{width:12px;height:12px;border-radius:50%;background:var(--brand);flex-shrink:0;box-shadow:0 0 0 3px var(--brand-lt)}
+.rm-dot.f{background:var(--surf2);box-shadow:0 0 0 3px var(--surf2)}
+.rm-line{width:2px;flex:1;background:var(--surf2);margin-top:5px}
+.rm-t{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--on);margin-bottom:.25rem;line-height:1.3}
+.rm-t.dim{color:var(--on-d);font-weight:600}
+.rm-b{font-size:.85rem;color:var(--on-d);line-height:1.68}
+.dest-card{background:var(--brand);border-radius:var(--r24);padding:clamp(2rem,3vw,3rem);position:relative;overflow:hidden}
+.dest-card::after{content:'';position:absolute;top:-50%;right:-20%;width:60%;height:160%;background:rgba(255,255,255,.04);border-radius:50%}
+.dest-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.48);margin-bottom:.8rem;font-weight:500}
+.dest-q{font-size:clamp(1.05rem,1.7vw,1.3rem);color:#fff;line-height:1.52;font-style:italic;margin-bottom:1.2rem;font-family:Georgia,serif;position:relative;z-index:2}
+.dest-sub{font-size:.9rem;color:rgba(255,255,255,.7);line-height:1.72;position:relative;z-index:2}
+.journey-card{background:var(--surf1);border:1px solid var(--surf2);border-radius:var(--r24);padding:1.75rem;margin-top:1.25rem}
+.jrny-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-d);font-weight:500;margin-bottom:1.5rem}
+.jsteps{display:flex;align-items:flex-start;position:relative}
+.jsteps::before{content:'';position:absolute;top:14px;left:14px;right:14px;height:2px;background:var(--surf2);z-index:0}
+.jstep{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1}
+.jdot{width:28px;height:28px;border-radius:50%;background:var(--surf);border:2px solid var(--surf2);display:flex;align-items:center;justify-content:center;margin-bottom:.65rem;font-family:var(--fm);font-size:.55rem;font-weight:700;color:var(--on-d)}
+.jstep.active .jdot{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 0 4px var(--brand-lt)}
+.jlbl{font-size:.68rem;color:var(--on-d);line-height:1.4;font-weight:700;padding:0 .15rem}
+.jstep.active .jlbl{color:var(--brand);font-weight:700}
+.nc-card{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);padding:1.75rem;margin-top:1.25rem}
+.nc-hd{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-d);font-weight:500;margin-bottom:1rem}
+.nc-g{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.nc-t{font-size:.9rem;font-weight:700;color:var(--on);margin-bottom:.3rem}
+.nc-b{font-size:.78rem;color:var(--on-d);line-height:1.6}
+@media(max-width:480px){.nc-g{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════
+   CONTACT
+═══════════════════════════════════ */
+#contact{background:var(--surf-inv);padding:clamp(5rem,8vw,8rem) var(--pad)}
+.cta-g{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(3rem,5vw,6rem);align-items:center}
+.cta-h{font-family:var(--fd);font-size:clamp(2rem,3.8vw,3.5rem);font-weight:700;color:var(--surf);letter-spacing:-.025em;line-height:1.05;margin-bottom:1rem}
+.cta-p{font-size:1rem;color:rgba(255,255,255,.58);line-height:1.75;margin-bottom:2rem}
+.cta-btn{display:inline-flex;align-items:center;font-family:var(--fb);font-size:.9375rem;font-weight:700;background:var(--brand);color:#fff;padding:.875rem 2rem;border-radius:var(--rpill);text-decoration:none;box-shadow:var(--e2);transition:background .2s,transform .2s var(--ease)}
+.cta-btn:hover{background:var(--brand-dk);transform:translateY(-2px)}
+.cta-pts{display:flex;flex-direction:column;gap:.9rem}
+.cta-pt{display:flex;align-items:baseline;gap:.75rem;font-size:.9375rem;color:rgba(255,255,255,.6);line-height:1.55}
+.cta-pt::before{content:'';width:5px;height:5px;background:var(--brand);border-radius:50%;flex-shrink:0;margin-top:.44rem}
+.cta-pt strong{color:#fff;font-weight:700}
+@media(max-width:900px){.cta-g{grid-template-columns:1fr}}
+footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75rem var(--pad);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem}
+.foot-logo{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--brand)}
+.foot-meta{font-family:var(--fm);font-size:.62rem;color:rgba(255,255,255,.2)}
+
+/* ═══════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════ */
+@keyframes fup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes scrollx{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+</style>
+</head>
+<body>
+
+<nav id="nav" aria-label="Primary">
+  <a href="#hero" class="nav-logo">MONTAR</a>
+  <ul class="nav-links">
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#world">Market</a></li>
+    <li><a href="#solution">Product</a></li>
+    <li><a href="#pilot">Traction</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#vision">Vision</a></li>
+  </ul>
+  <a href="mailto:adan@montar.run" class="nav-cta" aria-label="Contact — email adan@montar.run">Contact · MONTAR.run</a>
+</nav>
+
+<main id="main">
+<!-- HERO -->
+<section id="hero">
+  <div class="hl">
+    <div class="h-eye"><span class="eye-dot"></span>Driver-native AI · Finished-vehicle logistics · Seattle</div>
+    <h1 class="h-h1">Every car on a<br>dealer lot was<br><em>loaded by hand.</em></h1>
+    <p class="h-lead">MONTAR is the <em>execution layer</em> for car haulers—load planning, yard routing, and dealer delivery—where TMS ends and the driver is still on paper.</p>
+    <p class="h-sub">Carriers run dispatch on screens. Drivers run loads from memory: paper BOLs, bay codes, no optimization. <strong>That gap is measurable in hours per shift and dollars per vehicle—every day, at every yard.</strong></p>
+    <div class="h-acts">
+      <a href="mailto:adan@montar.run" class="btn-f" aria-label="Get in touch — email adan@montar.run">Get in touch · MONTAR.run</a>
+      <a href="#thesis" class="btn-t">Why this wins ↓</a>
+    </div>
+  </div>
+  <div class="hr">
+    <div class="hr-inner">
+      <div class="h-stats">
+        <div class="hs"><div class="hs-n">$10.5B</div><div class="hs-l">US vehicle shipping market</div></div>
+        <div class="hs"><div class="hs-n">15.9M+</div><div class="hs-l">New units/yr (US) — TAM adds used &amp; POV</div></div>
+        <div class="hs"><div class="hs-n">4,500</div><div class="hs-l">US car hauling carriers</div></div>
+        <div class="hs"><div class="hs-n">$62B</div><div class="hs-l">US automotive logistics</div></div>
+      </div>
+      <div class="zero-card">
+        <div class="zero-n">$0</div>
+        <div class="zero-d">Incumbents sell to the fleet office.<br><strong>Zero</strong> products own<br>the driver’s workflow.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="m-inner">
+    <span class="mi">Ford <span class="mi-dot"></span></span><span class="mi">Toyota <span class="mi-dot"></span></span><span class="mi">Honda <span class="mi-dot"></span></span><span class="mi">GM <span class="mi-dot"></span></span><span class="mi">Nissan <span class="mi-dot"></span></span><span class="mi">Hyundai <span class="mi-dot"></span></span><span class="mi">BMW <span class="mi-dot"></span></span><span class="mi">Volkswagen <span class="mi-dot"></span></span><span class="mi">Stellantis <span class="mi-dot"></span></span><span class="mi">Mercedes-Benz <span class="mi-dot"></span></span><span class="mi">Subaru <span class="mi-dot"></span></span><span class="mi">Kia <span class="mi-dot"></span></span><span class="mi">Mazda <span class="mi-dot"></span></span><span class="mi">Volvo <span class="mi-dot"></span></span><span class="mi">Rivian <span class="mi-dot"></span></span><span class="mi">Tesla <span class="mi-dot"></span></span><span class="mi">Lexus <span class="mi-dot"></span></span><span class="mi">Acura <span class="mi-dot"></span></span><span class="mi">Infiniti <span class="mi-dot"></span></span><span class="mi">Genesis <span class="mi-dot"></span></span><span class="mi">Mitsubishi <span class="mi-dot"></span></span><span class="mi">BNSF Orillia · Renton WA <span class="mi-dot"></span></span><span class="mi">BNSF Logistics Park Seattle · Kent WA <span class="mi-dot"></span></span><span class="mi">BNSF Hobart Yard · Los Angeles CA <span class="mi-dot"></span></span><span class="mi">BNSF San Bernardino CA <span class="mi-dot"></span></span><span class="mi">UP ICTF · Los Angeles CA <span class="mi-dot"></span></span><span class="mi">UP Global IV · Stockton CA <span class="mi-dot"></span></span><span class="mi">UP Lathrop CA <span class="mi-dot"></span></span><span class="mi">Port of Long Beach CA <span class="mi-dot"></span></span><span class="mi">Port of Los Angeles · San Pedro CA <span class="mi-dot"></span></span><span class="mi">Port of Tacoma WA <span class="mi-dot"></span></span><span class="mi">Port of Seattle WA <span class="mi-dot"></span></span><span class="mi">Port Hueneme · Oxnard CA <span class="mi-dot"></span></span><span class="mi">Port of Oakland CA <span class="mi-dot"></span></span><span class="mi">Port of Portland OR <span class="mi-dot"></span></span><span class="mi">National City Terminal · San Diego CA <span class="mi-dot"></span></span>
+    <span class="mi">Ford <span class="mi-dot"></span></span><span class="mi">Toyota <span class="mi-dot"></span></span><span class="mi">Honda <span class="mi-dot"></span></span><span class="mi">GM <span class="mi-dot"></span></span><span class="mi">Nissan <span class="mi-dot"></span></span><span class="mi">Hyundai <span class="mi-dot"></span></span><span class="mi">BMW <span class="mi-dot"></span></span><span class="mi">Volkswagen <span class="mi-dot"></span></span><span class="mi">Stellantis <span class="mi-dot"></span></span><span class="mi">Mercedes-Benz <span class="mi-dot"></span></span><span class="mi">Subaru <span class="mi-dot"></span></span><span class="mi">Kia <span class="mi-dot"></span></span><span class="mi">Mazda <span class="mi-dot"></span></span><span class="mi">Volvo <span class="mi-dot"></span></span><span class="mi">Rivian <span class="mi-dot"></span></span><span class="mi">Tesla <span class="mi-dot"></span></span><span class="mi">Lexus <span class="mi-dot"></span></span><span class="mi">Acura <span class="mi-dot"></span></span><span class="mi">Infiniti <span class="mi-dot"></span></span><span class="mi">Genesis <span class="mi-dot"></span></span><span class="mi">Mitsubishi <span class="mi-dot"></span></span><span class="mi">BNSF Orillia · Renton WA <span class="mi-dot"></span></span><span class="mi">BNSF Logistics Park Seattle · Kent WA <span class="mi-dot"></span></span><span class="mi">BNSF Hobart Yard · Los Angeles CA <span class="mi-dot"></span></span><span class="mi">BNSF San Bernardino CA <span class="mi-dot"></span></span><span class="mi">UP ICTF · Los Angeles CA <span class="mi-dot"></span></span><span class="mi">UP Global IV · Stockton CA <span class="mi-dot"></span></span><span class="mi">UP Lathrop CA <span class="mi-dot"></span></span><span class="mi">Port of Long Beach CA <span class="mi-dot"></span></span><span class="mi">Port of Los Angeles · San Pedro CA <span class="mi-dot"></span></span><span class="mi">Port of Tacoma WA <span class="mi-dot"></span></span><span class="mi">Port of Seattle WA <span class="mi-dot"></span></span><span class="mi">Port Hueneme · Oxnard CA <span class="mi-dot"></span></span><span class="mi">Port of Oakland CA <span class="mi-dot"></span></span><span class="mi">Port of Portland OR <span class="mi-dot"></span></span><span class="mi">National City Terminal · San Diego CA <span class="mi-dot"></span></span>
+  </div>
+</div>
+
+<!-- THESIS -->
+<section id="thesis" class="rv" aria-label="Investment thesis">
+  <div class="thesis-g">
+    <div class="thesis-it">
+      <div class="thesis-k">Category</div>
+      <div class="thesis-v">Execution software for drivers—not another TMS seat.</div>
+      <p class="thesis-s">The stack stops at dispatch. MONTAR owns what happens on the ramp, in the yard, and at the dealer curb.</p>
+    </div>
+    <div class="thesis-it">
+      <div class="thesis-k">Wedge</div>
+      <div class="thesis-v">Rails &amp; ports first. Dense loads, repeat visits, data flywheel.</div>
+      <p class="thesis-s">Start where inefficiency is highest and the same carriers show up daily—then expand across the finished-vehicle trip.</p>
+    </div>
+    <div class="thesis-it">
+      <div class="thesis-k">Traction</div>
+      <div class="thesis-v">Pilot live · Scale partner committed post-validation.</div>
+      <p class="thesis-s">7 trucks in production learning loops today; 100-truck rollout contracted after Phase 1 gates—not a pipeline slide.</p>
+    </div>
+    <div class="thesis-it">
+      <div class="thesis-k">Why this team</div>
+      <div class="thesis-v">CDL + enterprise ship velocity.</div>
+      <p class="thesis-s">Founder drove the rig; engineering has shipped global OEM-grade platforms. Domain you can’t fake.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WORLD -->
+<section id="world" class="sec">
+  <div class="si">
+    <div class="two">
+      <div>
+        <div class="chip rv">01 — Market</div>
+        <h2 class="sh rv">Massive TAM.<br><em>Zero</em> driver workflow.</h2>
+        <p class="sb rv" style="margin-bottom:1rem">TAM isn’t new-OEM only: <strong>used retail &amp; wholesale for resale dealers, auction lanes, dealer trades, fleet remarketing,</strong> and <strong>POV relocation</strong> (military / corporate moves)—all of it rides on car haulers through the same yards and ramps.</p>
+        <p class="sb rv">Carriers buy TMS, dispatch, and ELD for the office. <strong>Load planning, yard navigation, and dealer approach still live on paper and memory—whether the cargo is new, used, or a POV.</strong> That gap is uncaptured GDP.</p>
+        <div class="stat-cards rv" style="transition-delay:.1s">
+          <div class="sc"><span class="sc-n">$10.5B</span><span class="sc-l">US vehicle shipping services (IBISWorld 2025)</span></div>
+          <div class="sc"><span class="sc-n">15.9M</span><span class="sc-l">New US retail units (anchor stat; TAM includes used resale &amp; POV)</span></div>
+          <div class="sc"><span class="sc-n">4,500</span><span class="sc-l">US car hauling carriers</span></div>
+          <div class="sc"><span class="sc-n">$62B</span><span class="sc-l">US automotive logistics (Mordor 2025)</span></div>
+        </div>
+      </div>
+      <div class="bol-wrap rv" style="transition-delay:.15s">
+        <div class="bol-tag"><div class="bol-pulse"></div>Real United Road Bill of Lading — BNSF Orillia, Renton WA</div>
+        <div class="bol-doc">
+          <div class="bol-hd"><span class="bol-hd-l">United Road Services · Load 041625-09</span><span class="bol-hd-r">● 9 units assigned</span></div>
+          <div class="bol-bd">
+            <div class="bol-title">MASTER UNIFORM STRAIGHT BILL OF LADING</div>
+            <div class="bol-meta">ORIGIN: BNSF ORILLIA – RENTON WA &nbsp;·&nbsp; NOTIFY: 04/16/2025 &nbsp;·&nbsp; DESTINATION: RENTON WA</div>
+            <div class="bol-row hd"><span>VIN#</span><span>MODEL</span><span>DEALER</span><span>CLR</span><span>PARK LOC.</span><span>CITY</span></div>
+            <div class="bol-row"><span class="bv">4T1G11AK8PU123481</span><span>CAMRY XSE</span><span>05210-WA</span><span>040</span><span class="bl">T042</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">2T3P1RFV8PW847263</span><span>RAV4 XLE</span><span>05210-WA</span><span>040</span><span class="bl">T043</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">3TMLB5JN3SM178449</span><span>TACOMA TRD</span><span>05318-WA</span><span>750</span><span class="bl">T071</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">5TDHZRBH9MS523875</span><span>HIGHLANDER</span><span>05318-WA</span><span>040</span><span class="bl">T072</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">4T1DAACK6SU566558</span><span>COROLLA SE</span><span>05441-WA</span><span>1F7</span><span class="bl">T048</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">2T3P1RFV2SC561402</span><span>RAV4 ADV</span><span>05318-WA</span><span>1G3</span><span class="bl">T049</span><span>RENTON</span></div>
+            <div class="bol-row"><span class="bv">4T1DAACK1SU559372</span><span>CAMRY HYB</span><span>05210-WA</span><span>202</span><span class="bl">T044</span><span>RENTON</span></div>
+            <div class="bol-foot">TOTAL UNITS = 9 &nbsp;&nbsp; MBUSA REPRESENTATIVE ________________________ &nbsp;&nbsp; DATE __________</div>
+          </div>
+        </div>
+        <p class="bol-cap">Nine VINs. Nine bay codes. No optimization, no route—just “figure it out.” That’s the real workflow.</p>
+        <div class="insight"><div class="in-lbl">Why incumbents missed it</div><p class="in-txt">TMS and ELD monetize fleet seats. <strong>The buyer isn’t the person losing hours in the yard.</strong> MONTAR goes where the P&amp;L actually leaks—on the driver’s phone, before the wheels turn.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COST / FINANCIAL IMPACT -->
+<section id="cost" class="sec">
+  <div class="si">
+    <div class="cost-hdr">
+      <div>
+        <div class="chip rv">02 — Economic engine</div>
+        <h2 class="sh rv">Paid per vehicle.<br><em>Punished per hour.</em></h2>
+      </div>
+      <div class="rv" style="transition-delay:.1s">
+        <p class="sb">Drivers earn on delivered vehicles, not clock time—so yard delay isn’t “inefficiency,” it’s <strong>foregone revenue inside a hard 14-hour HOS window.</strong> Bad loadouts and bad routing compound across local, regional, and long-haul economics. Model it below.</p>
+      </div>
+    </div>
+
+    <div class="impact-row rv">
+      <div class="impact-card"><div class="ic-icon loss">💸</div><div class="ic-n red">$150+</div><div class="ic-lbl">Lost per vehicle left behind on a local run — more on regional &amp; long-haul</div></div>
+      <div class="impact-card"><div class="ic-icon time">⏱</div><div class="ic-n amber">2–4 hrs</div><div class="ic-lbl">Time lost per bad configuration incident — inside a 14-hr HOS window</div></div>
+      <div class="impact-card"><div class="ic-icon gain">📈</div><div class="ic-n grn">+1–2 runs</div><div class="ic-lbl">Extra runs per day when yard time drops (typical local)</div></div>
+    </div>
+
+    <!-- DRIVER CALCULATOR -->
+    <div class="calc-card rv" style="transition-delay:.1s">
+      <div class="calc-head">
+        <span class="calc-badge">Per Truck</span>
+        <div class="calc-ttl">Driver income loss calculator</div>
+      </div>
+      <div class="calc-sub">Illustrative model—per truck, per week. Tune assumptions to your operation; order-of-magnitude is what matters for diligence.</div>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label>Route type <span class="cv" id="v-rtype">Local</span></label>
+          <input type="range" id="rtype" min="0" max="2" value="0" step="1">
+          <div class="ctrl-scale"><span>Local</span><span>Regional</span><span>Long-haul</span></div>
+        </div>
+        <div class="ctrl"><label>Bad loads per week (this truck) <span class="cv" id="v-inc">3</span></label><input type="range" id="incidents" min="1" max="7" value="3"></div>
+        <div class="ctrl"><label>Delay per incident (hrs) <span class="cv" id="v-delay">2</span></label><input type="range" id="delay" min="0.5" max="4" value="2" step="0.5"></div>
+        <div class="ctrl"><label>Vehicles per load <span class="cv" id="v-vpl">9</span></label><input type="range" id="vpl" min="6" max="9" value="9"></div>
+      </div>
+      <div id="route-hint">📍 Local: ~$80–150/vehicle · 3–5 runs/day · Short distances</div>
+      <div class="res-row">
+        <div class="res-card pot"><div class="res-lbl">Weekly Revenue Potential</div><div class="res-n" id="r-pot">$18,900</div><div class="res-sub">This truck, full loads all week</div></div>
+        <div class="res-card tl"><div class="res-lbl">Weekly Hours Lost</div><div class="res-n" id="r-time">6 hrs</div><div class="res-sub">Inside your 14-hr HOS window</div></div>
+        <div class="res-card ml"><div class="res-lbl">Weekly Income Lost</div><div class="res-n" id="r-loss">$1,890</div><div class="res-sub">This truck only</div></div>
+      </div>
+    </div>
+
+    <!-- FLEET CALCULATOR -->
+    <div class="calc-card rv" style="transition-delay:.18s;margin-top:1rem">
+      <div class="calc-head">
+        <span class="calc-badge calc-badge--fleet">Fleet View</span>
+        <div class="calc-ttl">Fleet-wide weekly impact</div>
+      </div>
+      <div class="calc-sub">Fleet roll-up from the same mechanics—scale multiplies leakage that carriers rarely instrument today.</div>
+      <div class="ctrls">
+        <div class="ctrl"><label>Fleet size (trucks) <span class="cv" id="v-fleet">20</span></label><input type="range" id="fleet" min="5" max="200" value="20" step="5"></div>
+        <div class="ctrl"><label>Bad loads per truck per week <span class="cv" id="v-fleet-inc">3</span></label><input type="range" id="fleet-inc" min="1" max="7" value="3"></div>
+        <div class="ctrl"><label>Revenue per vehicle (avg) <span class="cv" id="v-fleet-rate">$140</span></label><input type="range" id="fleet-rate" min="80" max="400" value="140" step="10"></div>
+        <div class="ctrl"><label>Avg delay per incident (hrs) <span class="cv" id="v-fleet-delay">2</span></label><input type="range" id="fleet-delay" min="0.5" max="4" value="2" step="0.5"></div>
+      </div>
+      <div class="res-row res-row--fleet">
+        <div class="res-card pot"><div class="res-lbl">Fleet Weekly Potential</div><div class="res-n" id="rf-pot">$1.5M</div><div class="res-sub">All trucks, full loads</div></div>
+        <div class="res-card tl"><div class="res-lbl">Total Hours Lost</div><div class="res-n" id="rf-time">120 hrs</div><div class="res-sub">Across the fleet per week</div></div>
+        <div class="res-card ml"><div class="res-lbl">Fleet Weekly Loss</div><div class="res-n" id="rf-loss">$75,600</div><div class="res-sub">Recoverable with MONTAR</div></div>
+        <div class="res-card annual"><div class="res-lbl">Annual Impact</div><div class="res-n" id="rf-annual">$3.9M</div><div class="res-sub">Annualized fleet loss</div></div>
+      </div>
+    </div>
+
+    <!-- HOS + LOSS DONUTS -->
+    <div class="chart-card rv" style="transition-delay:.22s">
+      <div class="donuts-grid">
+        <div class="donut-panel">
+          <div class="hos-title">DOT Hours of Service — 14-hour window</div>
+          <div class="time-split">
+            <div class="donut-wrap">
+              <svg id="hos-svg" viewBox="0 0 140 140" width="180" height="180" aria-hidden="true">
+                <circle cx="70" cy="70" r="52" fill="none" stroke="#EDEAE5" stroke-width="18"/>
+                <circle id="arc-drive" cx="70" cy="70" r="52" fill="none" stroke="#81C995" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset 1.2s var(--ease)"/>
+                <circle id="arc-break" cx="70" cy="70" r="52" fill="none" stroke="#FDD663" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset 1.4s var(--ease)"/>
+                <circle id="arc-ineff" cx="70" cy="70" r="52" fill="none" stroke="#F28B82" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset 1.6s var(--ease)"/>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-mid">14 hrs</div>
+                <div class="donut-mid-sub">HOS window</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="dl-item"><div class="dl-sw dl-sw--drv"></div><div><div class="dl-tn" id="dl-drive">8.2 hrs</div><div class="dl-tl">Productive driving &amp; delivery</div></div></div>
+              <div class="dl-item"><div class="dl-sw dl-sw--brk"></div><div><div class="dl-tn">0.5 hr</div><div class="dl-tl">Required 30-min break (DOT HOS)</div></div></div>
+              <div class="dl-item"><div class="dl-sw dl-sw--ineff"></div><div><div class="dl-tn" id="dl-ineff">2.8 hrs</div><div class="dl-tl">On-duty, non-drive time (load &amp; unload)</div></div></div>
+              <div class="dl-item"><div class="dl-sw dl-sw--buf"></div><div><div class="dl-tn" id="dl-remain">2.5 hrs</div><div class="dl-tl">Remaining HOS buffer</div></div></div>
+              <div class="dl-callout">
+                <div class="dl-callout-lbl">With MONTAR</div>
+                <div class="dl-callout-txt">Less on-duty time stuck loading &amp; unloading — <strong id="dl-recovered">2.8 hrs</strong> shifted toward drive time per shift (modeled)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="donut-panel loss-panel">
+          <div class="hos-title">Where non-drive time goes (per shift)</div>
+          <p class="loss-hint">Model minutes lost to a <strong>reload</strong>, <strong>delivery wayfinding</strong> (approach / staging), and <strong>bay or vehicle locate</strong>—the donut resizes as you move the sliders.</p>
+          <div class="loss-ctrls">
+            <div class="ctrl">
+              <label>Reload / rework <span class="cv" id="v-loss-reload">45</span> min</label>
+              <input type="range" id="loss-reload" min="0" max="180" value="45" step="5">
+            </div>
+            <div class="ctrl">
+              <label>Delivery (approach &amp; staging) <span class="cv" id="v-loss-delivery">30</span> min</label>
+              <input type="range" id="loss-delivery" min="0" max="180" value="30" step="5">
+            </div>
+            <div class="ctrl">
+              <label>Bay / vehicle locate <span class="cv" id="v-loss-bay">35</span> min</label>
+              <input type="range" id="loss-bay" min="0" max="180" value="35" step="5">
+            </div>
+          </div>
+          <div class="time-split">
+            <div class="donut-wrap">
+              <svg id="loss-svg" viewBox="0 0 140 140" width="180" height="180" aria-hidden="true">
+                <circle cx="70" cy="70" r="52" fill="none" stroke="#EDEAE5" stroke-width="18"/>
+                <circle id="loss-arc-reload" cx="70" cy="70" r="52" fill="none" stroke="#B3261E" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset .35s var(--ease)"/>
+                <circle id="loss-arc-delivery" cx="70" cy="70" r="52" fill="none" stroke="#E65100" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset .35s var(--ease)"/>
+                <circle id="loss-arc-bay" cx="70" cy="70" r="52" fill="none" stroke="#5E35B1" stroke-width="18"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="butt"
+                  transform="rotate(-90 70 70)" style="transition:stroke-dashoffset .35s var(--ease)"/>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-mid" id="loss-total-mid">110 min</div>
+                <div class="donut-mid-sub" id="loss-total-sub">on-duty drain</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="dl-item"><div class="dl-sw dl-sw--lr"></div><div><div class="dl-tn" id="ld-reload">45 min</div><div class="dl-tl">Reload / rework</div></div></div>
+              <div class="dl-item"><div class="dl-sw dl-sw--ld"></div><div><div class="dl-tn" id="ld-delivery">30 min</div><div class="dl-tl">Delivery wayfinding</div></div></div>
+              <div class="dl-item"><div class="dl-sw dl-sw--lb"></div><div><div class="dl-tn" id="ld-bay">35 min</div><div class="dl-tl">Bay / locate vehicle</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem" class="sec">
+  <div class="si">
+    <div class="prob-hdr">
+      <div><div class="chip rv">03 — The broken workflow</div><h2 class="sh rv">Three leaks.<br><em>Every load.</em></h2></div>
+      <div class="rv" style="transition-delay:.1s"><p class="sb">If you’re looking for “the app for car haulers,” it doesn’t exist yet—that’s the hole we’re filling. <strong>These failure modes repeat at scale because nothing sits in the loop with the driver.</strong></p></div>
+    </div>
+    <div class="moments rv">
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">01</div><div class="m-lbl">The Yard</div><div class="m-ttl">Loading from memory, every time</div><div class="m-cost"><span class="m-ci">💸</span><span class="m-ct">$150–$300 lost when a vehicle doesn't fit and is left behind</span></div><p class="m-p">The driver receives a paper load sheet. No guidance on configuration, no weight check, no verification. When something goes wrong, vehicles get unloaded and reloaded. <strong>What should take 90 minutes takes half a day.</strong></p></div></div>
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">02</div><div class="m-lbl">The Hunt</div><div class="m-ttl">Navigating the yard without a route</div><div class="m-cost"><span class="m-ci">⏱</span><span class="m-ct">20–45 minutes lost per load walking the yard</span></div><p class="m-p">Bay codes on the load sheet are positions scattered across a facility spanning several city blocks. Some yards have a basic diagram. Most have painted rows on asphalt. <strong>None give the driver an optimized pickup route for their specific load.</strong></p></div></div>
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">03</div><div class="m-lbl">The Delivery</div><div class="m-ttl">Arriving blind at the dealer</div><div class="m-cost"><span class="m-ci">🗺</span><span class="m-ct">15–30 minutes lost per stop at an unfamiliar dealer</span></div><p class="m-p">The load sheet gives an address — not the entrance, the driveway, or how to position an 80-foot rig in a tight street. Experienced drivers know from memory. New drivers guess. <strong>Every wrong approach is income off the next run.</strong></p></div></div>
+    </div>
+    <div class="pullquote rv"><div class="pq-mk">"</div><p class="pq-tx">One bad stack. A reload. Another unit that still doesn’t fit. A two-hour run becomes a five-hour firefight—inside the same HOS clock. That isn’t anecdotal; it’s the default when software stops at dispatch.</p></div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution" class="sec">
+  <div class="si">
+    <div class="sol-hdr">
+      <div><div class="chip rv">04 — Product</div><h2 class="sh rv">Software<br><em>where the rig is.</em></h2></div>
+      <div class="rv" style="transition-delay:.1s"><p class="sb">MONTAR is a mobile execution layer: constraints-aware load planning, sequenced yard pickup, and dealer-curb guidance—<strong>the workflows TMS never instrumented.</strong> AI proposes; the driver decides. Evidence over black-box magic.</p></div>
+    </div>
+    <div class="sol-cards rv">
+      <div class="sol-card"><div class="sol-top"></div><div class="sol-bd"><div class="sol-tag">Before the first vehicle moves</div><div class="sol-ttl">The load is optimized and verified</div><p class="sol-p">MONTAR delivers an optimized load plan — verified against legal weight limits, physical rig constraints, and the driver's own preferences. Configuration conflicts are caught before anyone drives up the ramp. <strong>The driver confirms the plan, sees the reasoning, and can adjust with full visibility into the impact of any change.</strong></p></div></div>
+      <div class="sol-card"><div class="sol-top"></div><div class="sol-bd"><div class="sol-tag">In the yard</div><div class="sol-ttl">Every vehicle found in the right order</div><p class="sol-p">Bay codes become a live, sequenced pickup route across the yard — rail yard or port, single OEM or multi-brand. MONTAR maps the vehicle locations and guides the driver through the pickup in the exact sequence the load plan requires. <strong>No backtracking. No wasted steps. Load and go.</strong></p></div></div>
+      <div class="sol-card"><div class="sol-top"></div><div class="sol-bd"><div class="sol-tag">At the dealer door</div><div class="sol-ttl">Intelligently guided delivery — every time</div><p class="sol-p">MONTAR knows the dealer — the right entrance, the correct approach angle, and how to position an 80-foot rig without a wrong turn. Arriving without this information risks damage to the vehicle, the rig, or both. <strong>MONTAR eliminates that risk with guided delivery intelligence at every drop-off.</strong></p></div></div>
+    </div>
+    <div class="collab-card rv"><div class="collab-hl">MONTAR <span>suggests.</span><br>Driver decides.</div><div><p class="collab-p">Explainable plans—not black boxes. Preferences and on-the-ground judgment fold into constraints. If someone overrides, <strong>they see breakage before the ramp, not at the dealer.</strong> That’s how you get adoption in a liability-heavy job.</p></div></div>
+    <div class="formats-card rv"><div class="fmt-lbl">Distribution reality</div><p class="fmt-p">Drivers switch carriers and formats constantly. <strong>MONTAR normalizes fragmented load sheets</strong> so the product sticks to the driver—not to a single TMS rollout.</p></div>
+    <div class="outcomes rv">
+      <div class="out"><div class="out-ic">🏃</div><div class="out-t">Throughput</div><p class="out-b">Shorter yard cycles → more paid moves inside the same HOS window—measurable in runs and revenue.</p></div>
+      <div class="out"><div class="out-ic">✅</div><div class="out-t">Fewer failure modes</div><p class="out-b">Bad stacks and blind approaches drive rework, claims, and violations—surface them before rollout.</p></div>
+      <div class="out"><div class="out-ic">📍</div><div class="out-t">Repeatable curb ops</div><p class="out-b">Dealer-specific context turns one-off heroics into a system—better for drivers <em>and</em> dispatch.</p></div>
+      <div class="out"><div class="out-ic">🧠</div><div class="out-t">Compounding data</div><p class="out-b">Every load tightens models for yards, OEM mixes, and lanes—network effects without multi-tenant fantasy.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" class="sec">
+  <div class="si">
+    <div class="team-hdr">
+      <div><div class="chip rv">05 — Team</div><h2 class="sh rv">Operator +<br><em>builder.</em></h2></div>
+      <div class="rv" style="transition-delay:.1s"><p class="sb">We’ve shipped a regulated enterprise platform together end-to-end (strategy → architecture → prod). <strong>One of us held the job this product serves; the other has shipped OEM-scale systems.</strong> Short chain of command; long track record of execution.</p></div>
+    </div>
+    <div class="people">
+      <div class="cof-card rv">
+        <div class="cof-k">Co-founder</div>
+        <p class="cof-bio"><strong>Product and operations at Fortune-scale;</strong> military background; bias to what happens on the ramp, not in a deck. <strong>Hands-on auto transport experience—still credentialed to do the work.</strong> Built to validate truth with drivers and fleets fast.</p>
+      </div>
+      <div class="cof-card rv" style="transition-delay:.1s">
+        <div class="cof-k">Co-founder</div>
+        <p class="cof-bio"><strong>Engineering leadership on global OEM and enterprise platforms—consumer-grade UX with production discipline.</strong> Ships quickly without mortgaging architecture. <strong>Prior cofounder velocity:</strong> strategy through shipped product, together.</p>
+      </div>
+    </div>
+    <div class="caps rv">
+      <div class="cap"><div class="cap-n">01</div><div class="cap-t">Unfair domain access</div><p class="cap-b">The team has done the work and holds the credentials—pull on that for pilots and ground-truth testing.</p></div>
+      <div class="cap"><div class="cap-n">02</div><div class="cap-t">Enterprise taste</div><p class="cap-b">Shipped at F500/OEM bar—security, scale, and UX discipline carriers expect.</p></div>
+      <div class="cap"><div class="cap-n">03</div><div class="cap-t">Systems depth</div><p class="cap-b">OEM-grade engineering muscle on the stack that ingests messy real-world inputs.</p></div>
+      <div class="cap"><div class="cap-n">04</div><div class="cap-t">Shipped together</div><p class="cap-b">Not a first-date cofounder split—existing collaboration velocity from prior builds.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PILOT -->
+<section id="pilot" class="sec">
+  <div class="si">
+    <div class="chip rv">06 — Traction</div>
+    <h2 class="sh sh--pilot rv">In market.<br><em>Contracted scale.</em></h2>
+    <div class="phases">
+      <div class="phase p1 rv"><div class="ph-stripe"></div><div class="ph-in"><div class="ph-tag">Phase 1 — Prove it</div><div class="ph-name">Global Auto Transport<br>Chino, California</div><p class="ph-p"><strong>7 trucks</strong> on the road in SoCal. Shadow → live cutover: model trains on real decisions, then becomes the primary tool. Success = measurable time &amp; rework reduction drivers will actually adopt.</p><div class="badge a"><div class="bdot"></div>7 trucks · live learning loop</div></div></div>
+      <div class="phase p2 rv" style="transition-delay:.1s"><div class="ph-stripe"></div><div class="ph-in"><div class="ph-tag">Phase 2 — Contracted scale</div><div class="ph-name">Named partner<br>Post–Phase 1 gates</div><p class="ph-p"><strong>100-truck rollout</strong> under contract contingent on Phase 1 milestones—not pipeline theater. Density across ports &amp; rails on the West Coast is the data accelerant for models and UX.</p><div class="badge c"><div class="bdot"></div>100 trucks · gated</div></div></div>
+    </div>
+    <div class="origins-card rv">
+      <div class="or-hd">West Coast origins in pilot scope</div>
+      <div class="or-cols">
+        <div><div class="or-reg">Pacific Northwest — Seattle</div><ul class="or-list"><li><strong>BNSF Orillia</strong>, Renton WA — Toyota primary distribution</li><li><strong>Port of Tacoma</strong> — Subaru, Toyota, BMW, Volkswagen imports</li></ul></div>
+        <div><div class="or-reg">Southern California — Chino</div><ul class="or-list"><li><strong>Port of Long Beach</strong> — Toyota primary import terminal</li><li><strong>Port of LA</strong>, San Pedro — Honda, Nissan, Hyundai, Kia</li><li><strong>Port Hueneme</strong>, Oxnard — Volkswagen, BMW, Volvo, Mazda</li><li><strong>BNSF Miraloma</strong>, Riverside — Ford, GM, Stellantis</li><li><strong>National City Terminal</strong>, San Diego — Toyota, Honda secondary</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section id="vision" class="sec">
+  <div class="si">
+    <div class="vis-g">
+      <div>
+        <div class="chip rv">07 — Roadmap</div>
+        <h2 class="sh rv">Own the yard.<br><em>Then the trip.</em></h2>
+        <p class="sb rv" style="margin-top:1rem">Start where the pain and frequency are highest; expand along the same driver workflow into inspection, proof-of-delivery, and dispatch-adjacent surfaces. <strong>One wedge, multiple expansion vectors.</strong></p>
+        <div class="roadmap rv" style="transition-delay:.1s;margin-top:2rem">
+          <div class="rm"><div class="rm-tr"><div class="rm-dot"></div><div class="rm-line"></div></div><div><div class="rm-t">Constraint-aware load planning</div><div class="rm-b">Legal weight, deck geometry, preferences—verified before the first unit moves.</div></div></div>
+          <div class="rm"><div class="rm-tr"><div class="rm-dot"></div><div class="rm-line"></div></div><div><div class="rm-t">Yard graph &amp; pickup sequencing</div><div class="rm-b">Turn bay codes into ordered paths across huge facilities—ports &amp; rails first.</div></div></div>
+          <div class="rm"><div class="rm-tr"><div class="rm-dot f"></div><div class="rm-line"></div></div><div><div class="rm-t dim">Dealer-curb intelligence</div><div class="rm-b">Approach, staging, PoD—same driver workflow, higher-stakes stops.</div></div></div>
+          <div class="rm"><div class="rm-tr"><div class="rm-dot f"></div></div><div><div class="rm-t dim">OS for the car-hauler cab</div><div class="rm-b">Inspections, dispatch handoffs, navigation—native to auto transport, not generic freight.</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="dest-card rv"><div class="dest-lbl">End state</div><p class="dest-q">"The default execution layer for anyone paid to move a vehicle before it’s sold."</p><p class="dest-sub">New, used resale, and POV moves all ride the same physical network—rails, ports, lots—without purpose-built driver software. MONTAR starts in the highest-friction yards and compounds with every load.</p></div>
+        <div class="journey-card rv" style="transition-delay:.1s">
+          <div class="jrny-lbl">End-to-end vision · Manufacturer → Dealer lot</div>
+          <div class="jsteps">
+            <div class="jstep"><div class="jdot">01</div><div class="jlbl">Manufacturer<br>Plant</div></div>
+            <div class="jstep"><div class="jdot">02</div><div class="jlbl">Rail Yard<br>&amp; Port</div></div>
+            <div class="jstep active"><div class="jdot">03</div><div class="jlbl">Car Hauler<br>Yard</div></div>
+            <div class="jstep"><div class="jdot">04</div><div class="jlbl">In<br>Transit</div></div>
+            <div class="jstep"><div class="jdot">05</div><div class="jlbl">Dealer<br>Lot</div></div>
+          </div>
+        </div>
+        <div class="nc-card rv" style="transition-delay:.15s"><div class="nc-hd">Where we don’t play</div><div class="nc-g"><div><div class="nc-t">Load boards / marketplaces</div><p class="nc-b">They match freight. We run the job after the match—different budget, different user, <strong>no dominant product today.</strong></p></div><div><div class="nc-t">Generic telematics</div><p class="nc-b">Compliance and GPS don’t solve load geometry, yard topology, or dealer approach. <strong>Not substitutes.</strong></p></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" aria-labelledby="contact-heading">
+  <div class="cta-g">
+    <div class="rv">
+      <h2 id="contact-heading" class="cta-h">Raise your hand.</h2>
+      <p class="cta-p">We’re talking to carriers, strategic partners, and investors who want early access to the data room, pilot metrics, and roadmap. <strong>If you’re evaluating this category, you should see the model.</strong></p>
+      <a href="mailto:adan@montar.run" class="cta-btn" aria-label="Email the team — adan@montar.run">Email us · MONTAR.run</a>
+    </div>
+    <div class="cta-pts rv" style="transition-delay:.1s">
+      <div class="cta-pt"><strong>Live pilot</strong> — Global Auto Transport · 7 trucks · SoCal</div>
+      <div class="cta-pt"><strong>Gated scale</strong> — 100-truck partner · contract · post–Phase 1</div>
+      <div class="cta-pt"><strong>Diligence pack</strong> — interviews, load-sheet corpus, unit economics model</div>
+      <div class="cta-pt"><strong>Strategic arc</strong> — category leader path (e.g. United Road-scale fleets)</div>
+      <div class="cta-pt"><strong>MONTAR Inc.</strong> · Seattle, WA</div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer><span class="foot-logo">MONTAR</span><span class="foot-meta">© MONTAR Inc. · Seattle, WA · Confidential</span></footer>
+
+<script>
+// NAV
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('up',scrollY>60),{passive:true});
+
+// REVEAL
+const ro=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on')})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+// Route type presets: [label, rate, runsPerDay, hint]
+const ROUTES=[
+  ['Local','$80–150',4,'📍 Local: ~$80–150/vehicle · 3–5 runs/day · Short distances within metro area'],
+  ['Regional','$150–300',2,'🛣 Regional: ~$150–300/vehicle · 1–2 runs/day · Moderate distances, same-day return'],
+  ['Long-haul','$300–600+',1,'🗺 Long-haul: ~$300–600+/vehicle · 1 run/1–2 days · Cross-state or cross-country']
+];
+const RATES=[115,225,450]; // midpoint per route type
+const CIRC=326.7; // donut circumference r=52
+
+// DRIVER CALCULATOR
+function calcDriver(){
+  const rt=+document.getElementById('rtype').value;
+  const inc=+document.getElementById('incidents').value;
+  const delay=+document.getElementById('delay').value;
+  const vpl=+document.getElementById('vpl').value;
+
+  document.getElementById('v-rtype').textContent=ROUTES[rt][0];
+  document.getElementById('v-inc').textContent=inc;
+  document.getElementById('v-delay').textContent=delay;
+  document.getElementById('v-vpl').textContent=vpl;
+
+  const rate=RATES[rt];
+  const runsPerDay=ROUTES[rt][2];
+  const hint=document.getElementById('route-hint');
+  if(hint)hint.textContent=ROUTES[rt][3];
+
+  // Weekly potential: 5 days × runs/day × vehicles × rate
+  const weeklyPot=5*runsPerDay*vpl*rate;
+  // Weekly time lost
+  const weeklyTime=(inc*delay).toFixed(1);
+  // Income lost: each hour of delay ≈ 0.5 runs missed (conservative)
+  const weeklyLoss=Math.round(inc*delay*0.5*vpl*rate);
+
+  const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+n.toLocaleString();
+  document.getElementById('r-pot').textContent=fmt(weeklyPot);
+  document.getElementById('r-time').textContent=weeklyTime+' hrs';
+  document.getElementById('r-loss').textContent=fmt(weeklyLoss);
+
+  // HOS donut: 14-hour window (red arc = modeled on-duty non-drive: loading & unloading)
+  // Segments: break=0.5hr fixed; non-drive from slider model; driving fills remainder up to 11hr cap
+  const dailyIneff=(inc/5)*delay;
+  const HOS=14;
+  const breakHrs=0.5;
+  const driveHrs=Math.min(11, HOS-breakHrs-dailyIneff);
+  const remaining=Math.max(0, HOS-breakHrs-dailyIneff-driveHrs);
+  const C=326.7; // circumference r=52
+
+  // We draw 3 arcs stacked. Each circle starts at same rotation, we offset via dashoffset.
+  // Arc length = fraction × C
+  const driveArc=(driveHrs/HOS)*C;
+  const breakArc=(breakHrs/HOS)*C;
+  const ineffArc=(Math.min(dailyIneff,HOS-breakHrs)/HOS)*C;
+
+  // Drive arc: dasharray=driveArc, dashoffset=0
+  setArc('arc-drive', driveArc, 0);
+  // Break arc: starts after drive
+  setArc('arc-break', breakArc, C-driveArc);
+  // Non-drive (load/unload) arc: starts after drive+break
+  setArc('arc-ineff', ineffArc, C-driveArc-breakArc);
+
+  const dd=document.getElementById('dl-drive');
+  const di=document.getElementById('dl-ineff');
+  const dr=document.getElementById('dl-remain');
+  const dc=document.getElementById('dl-recovered');
+  if(dd)dd.textContent=driveHrs.toFixed(1)+' hrs';
+  if(di)di.textContent=dailyIneff.toFixed(1)+' hrs';
+  if(dr)dr.textContent=Math.max(0,remaining).toFixed(1)+' hrs';
+  if(dc)dc.textContent=dailyIneff.toFixed(1)+' hrs';
+}
+
+function setArc(id, arcLen, offset){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.setAttribute('stroke-dasharray', arcLen+' '+(CIRC-arcLen));
+  el.setAttribute('stroke-dashoffset', offset);
+}
+
+// FLEET CALCULATOR
+function calcFleet(){
+  const fleet=+document.getElementById('fleet').value;
+  const inc=+document.getElementById('fleet-inc').value;
+  const rate=+document.getElementById('fleet-rate').value;
+  const delay=+document.getElementById('fleet-delay').value;
+
+  document.getElementById('v-fleet').textContent=fleet;
+  document.getElementById('v-fleet-inc').textContent=inc;
+  document.getElementById('v-fleet-rate').textContent='$'+rate;
+  document.getElementById('v-fleet-delay').textContent=delay;
+
+  // Per truck per week: assume ~2 runs/day × 5 days × 9 vehicles
+  const weeklyPotPerTruck=2*5*9*rate;
+  const fleetPot=weeklyPotPerTruck*fleet;
+  const totalHrsLost=inc*delay*fleet;
+  const lossPerTruck=Math.round(inc*delay*0.5*9*rate);
+  const fleetLoss=lossPerTruck*fleet;
+  const annual=fleetLoss*52;
+
+  const fmt=n=>{
+    if(n>=1000000)return '$'+(n/1000000).toFixed(1)+'M';
+    if(n>=1000)return '$'+(n/1000).toFixed(0)+'K';
+    return '$'+n.toLocaleString();
+  };
+
+  document.getElementById('rf-pot').textContent=fmt(fleetPot);
+  document.getElementById('rf-time').textContent=totalHrsLost.toFixed(0)+' hrs';
+  document.getElementById('rf-loss').textContent=fmt(fleetLoss);
+  document.getElementById('rf-annual').textContent=fmt(annual);
+}
+
+function updateLossDonut(){
+  const r=+document.getElementById('loss-reload').value;
+  const d=+document.getElementById('loss-delivery').value;
+  const b=+document.getElementById('loss-bay').value;
+  const t=r+d+b;
+  document.getElementById('v-loss-reload').textContent=r;
+  document.getElementById('v-loss-delivery').textContent=d;
+  document.getElementById('v-loss-bay').textContent=b;
+  document.getElementById('ld-reload').textContent=r+' min';
+  document.getElementById('ld-delivery').textContent=d+' min';
+  document.getElementById('ld-bay').textContent=b+' min';
+  const mid=document.getElementById('loss-total-mid');
+  const sub=document.getElementById('loss-total-sub');
+  if(mid)mid.textContent=t===0?'0 min':t+' min';
+  if(sub)sub.textContent=t===0?'move sliders to model':'on-duty drain';
+  if(t===0){
+    setArc('loss-arc-reload',0,0);
+    setArc('loss-arc-delivery',0,0);
+    setArc('loss-arc-bay',0,0);
+    return;
+  }
+  const ar=(r/t)*CIRC;
+  const ad=(d/t)*CIRC;
+  const ab=(b/t)*CIRC;
+  setArc('loss-arc-reload',ar,0);
+  setArc('loss-arc-delivery',ad,CIRC-ar);
+  setArc('loss-arc-bay',ab,CIRC-ar-ad);
+}
+
+// Bind driver calc
+['rtype','incidents','delay','vpl'].forEach(id=>document.getElementById(id)?.addEventListener('input',calcDriver));
+// Bind fleet calc
+['fleet','fleet-inc','fleet-rate','fleet-delay'].forEach(id=>document.getElementById(id)?.addEventListener('input',calcFleet));
+
+// Init both
+calcDriver();
+calcFleet();
+
+['loss-reload','loss-delivery','loss-bay'].forEach(id=>document.getElementById(id)?.addEventListener('input',updateLossDonut));
+updateLossDonut();
+
+// Trigger HOS donut animation on scroll
+const dObs=new IntersectionObserver(e=>{if(e[0].isIntersecting){calcDriver();updateLossDonut();dObs.disconnect()}},{threshold:.3});
+const hosEl=document.getElementById('hos-svg');
+if(hosEl)dObs.observe(hosEl);
+</script>
+</body>
+</html>
