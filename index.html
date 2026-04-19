@@ -40,6 +40,7 @@ img,svg{display:block;max-width:100%}
 @media(prefers-reduced-motion:reduce){
   .rv,.rv-flow,.rv-donut-p,.flow-arr{transition:none!important;animation:none!important}
   #cost-viz.in-view .flow-strip,#cost-viz.in-view .donut-panel{opacity:1!important;transform:none!important}
+  #hero .h-eye,#hero .h-h1,#hero .h-sub,#hero .h-beat,#hero .h-lead,#hero .h-acts,#hero .h-stats,#hero .zero-card{animation:none!important;opacity:1!important}
 }
 .nav-cta:focus-visible,.btn-f:focus-visible,.btn-t:focus-visible,.cta-btn:focus-visible,.nav-logo:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
 
@@ -69,9 +70,14 @@ img,svg{display:block;max-width:100%}
 .h-lead em{font-style:normal;color:var(--brand)}
 .h-sub{font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.78;color:var(--on-v);max-width:480px;margin-bottom:2.5rem;opacity:0;animation:fup .7s var(--ease) .42s forwards}
 .h-sub strong{color:var(--on);font-weight:700}
-#hero .h-sub{max-width:34rem;margin-bottom:1.25rem;animation-delay:.34s}
-#hero .h-lead{animation-delay:.42s;margin-bottom:2.25rem}
+.h-beat{font-size:clamp(1.02rem,1.4vw,1.2rem);font-family:var(--fd);font-weight:700;line-height:1.3;letter-spacing:-.02em;color:var(--on);max-width:34rem;margin-bottom:1rem;opacity:0;animation:fup .7s var(--ease) .38s forwards}
+#hero .hl > p.h-sub{max-width:36rem}
+#hero .hl > p:nth-of-type(1).h-sub{margin-bottom:1rem;animation-delay:.34s}
+#hero .h-beat{animation-delay:.38s}
+#hero .hl > p:nth-of-type(3).h-sub{margin-bottom:1.25rem;animation-delay:.42s}
+#hero .hl > p.h-lead{animation-delay:.48s;margin-bottom:2.25rem}
 .h-acts{display:flex;gap:.875rem;flex-wrap:wrap;opacity:0;animation:fup .7s var(--ease) .5s forwards}
+#hero .h-acts{animation:fup .7s var(--ease) .56s forwards}
 .btn-f{display:inline-flex;align-items:center;font-family:var(--fb);font-size:.9375rem;font-weight:700;color:#fff;background:var(--brand);padding:.75rem 1.75rem;border-radius:var(--rpill);text-decoration:none;box-shadow:var(--e1);transition:background .2s,transform .2s var(--ease),box-shadow .2s;white-space:nowrap}
 .btn-f:hover{background:var(--brand-dk);transform:translateY(-2px);box-shadow:var(--e3)}
 .btn-t{display:inline-flex;align-items:center;font-family:var(--fb);font-size:.9375rem;font-weight:700;color:var(--brand);background:var(--brand-lt);padding:.75rem 1.75rem;border-radius:var(--rpill);text-decoration:none;transition:background .2s,transform .2s var(--ease);white-space:nowrap}
@@ -501,8 +507,10 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
 <section id="hero">
   <div class="hl">
     <div class="h-eye"><span class="eye-dot"></span>Driver-native AI · Finished-vehicle logistics · Seattle</div>
-    <h1 class="h-h1">Nine vehicles.<br>One paper list.<br>No software.</h1>
-    <p class="h-sub">That’s how every car on every dealer lot in America gets loaded. A driver figures out the configuration, finds the vehicles, and navigates the delivery—alone, from memory, every time. <strong>15.9 million vehicles a year.</strong> Nobody built software for this.</p>
+    <h1 class="h-h1">Every car on that lot was loaded by someone figuring it out alone.</h1>
+    <p class="h-sub">Which vehicle fits which slot. Where it sits in a yard the size of six city blocks. How to get an 80-foot rig into a dealership on a residential street. Memory. Experience. A phone call to dispatch.</p>
+    <p class="h-beat">Every load. Every driver. Every day.</p>
+    <p class="h-sub">15.9 million vehicles a year. $10.5 billion industry. <strong>Zero</strong> tools built for the person doing the work.</p>
     <p class="h-lead">MONTAR is the <em>first</em>.</p>
     <div class="h-acts">
       <a href="mailto:adan@montar.run" class="btn-f" aria-label="Get in touch — email adan@montar.run">Get in touch · MONTAR.run</a>
