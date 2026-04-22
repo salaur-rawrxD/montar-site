@@ -134,6 +134,21 @@ img,svg{display:block;max-width:100%}
    WORLD
 ═══════════════════════════════════ */
 #world{background:var(--surf)}
+.world-block{margin-bottom:1.4rem}
+.world-block:last-of-type{margin-bottom:1.25rem}
+.wb-lbl{font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);font-weight:600;margin-bottom:.55rem}
+.wb-p{font-size:.95rem;color:var(--on-v);line-height:1.7;max-width:46ch}
+.wb-p strong{color:var(--on);font-weight:700}
+.cost-stack{display:flex;flex-direction:column;gap:.55rem;max-width:48ch}
+.cost-line{display:flex;align-items:baseline;gap:1rem;background:var(--surf);border:1px solid var(--surf2);border-left:3px solid var(--surf2);border-radius:var(--r12);padding:.9rem 1.1rem;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
+.cost-line:hover{box-shadow:var(--e2);transform:translateX(2px)}
+.cost-line--key{background:var(--brand-lt);border-color:rgba(232,98,10,.22);border-left-color:var(--brand)}
+.cost-n{font-family:var(--fd);font-size:1.12rem;font-weight:700;color:var(--on);letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0;min-width:7.5rem}
+.cost-line--key .cost-n{color:var(--brand-dk);font-size:1.22rem}
+.cost-l{font-size:.82rem;color:var(--on-v);line-height:1.45}
+.cost-line--key .cost-l{color:var(--brand-dk);font-weight:600}
+.world-pull{font-family:var(--fd);font-size:clamp(1rem,1.45vw,1.18rem);font-weight:700;color:var(--on);line-height:1.4;letter-spacing:-.015em;border-left:3px solid var(--brand);padding:.25rem 0 .25rem 1rem;margin-top:1.75rem;max-width:48ch}
+.world-pull strong{color:var(--brand-dk);font-weight:700}
 .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:2rem}
 .sc{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.25rem 1.5rem;box-shadow:var(--e1);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s var(--ease)}
 .sc:hover{box-shadow:var(--e3);transform:translateY(-2px)}
@@ -540,9 +555,9 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
     <div class="hr-inner">
       <div class="h-stats">
         <div class="hs"><div class="hs-n">$200–$1K</div><div class="hs-l">Cost of a single bad load</div></div>
-        <div class="hs"><div class="hs-n">~$4K/mo</div><div class="hs-l">Quiet leak per truck (recoverable)</div></div>
-        <div class="hs"><div class="hs-n">~$48K/yr</div><div class="hs-l">Per truck, every year</div></div>
-        <div class="hs"><div class="hs-n">~$1M/yr</div><div class="hs-l">A 20-truck fleet’s unseen bill</div></div>
+        <div class="hs"><div class="hs-n">2–4/mo</div><div class="hs-l">Bad loads per truck, per month</div></div>
+        <div class="hs"><div class="hs-n">$600–$4K</div><div class="hs-l">Leaked per truck, every month</div></div>
+        <div class="hs"><div class="hs-n">Up to $1M</div><div class="hs-l">Annual bill on a 20-truck fleet</div></div>
       </div>
       <div class="zero-card">
         <div class="zero-n">$0</div>
@@ -591,14 +606,43 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
   <div class="si">
     <div class="two">
       <div>
-        <h2 class="sh rv">Massive TAM.<br><em>Zero</em> driver workflow.</h2>
-        <p class="sb rv" style="margin-bottom:1rem">Beyond new OEM, the same haulers move <strong>used retail and wholesale, auctions, dealer trades, fleet remarketing,</strong> and <strong>POV relocation</strong> (military and corporate)—one physical network, rails to dealer lots.</p>
-        <p class="sb rv">Carriers buy TMS, dispatch, and ELD for the office. <strong>Planning, yard routing, and dealer approach stay on paper and memory—for new, used, or POV.</strong> That gap is uncaptured GDP.</p>
-        <div class="stat-cards rv" style="transition-delay:.1s">
-          <div class="sc"><span class="sc-n">$10.5B</span><span class="sc-l">US vehicle shipping services (IBISWorld 2025)</span></div>
-          <div class="sc"><span class="sc-n">15.9M</span><span class="sc-l">New US retail units per year · TAM includes used and POV</span></div>
-          <div class="sc"><span class="sc-n">4,500</span><span class="sc-l">US car hauling carriers</span></div>
-          <div class="sc"><span class="sc-n">$62B</span><span class="sc-l">US automotive logistics (Mordor 2025)</span></div>
+        <h2 class="sh rv">Every load is a high-stakes decision.<br><em>Made alone. In the field.</em></h2>
+
+        <div class="world-block rv" style="transition-delay:.05s">
+          <div class="wb-lbl">The reality</div>
+          <p class="wb-p">A driver gets a paper load sheet. Nine VINs. Bay codes scattered across a yard the size of six city blocks. <strong>No route. No weight check. No guide to the dealer curb.</strong> Figure it out—before the wheels turn.</p>
+        </div>
+
+        <div class="world-block rv" style="transition-delay:.1s">
+          <div class="wb-lbl">What goes wrong</div>
+          <p class="wb-p">A stack that violates weight. An hour spent hunting a bay. A rig that can’t fit the dealer driveway. <strong>Every miss triggers a reload, a re-route, or a missed delivery window</strong>—inside the same 14-hour HOS clock.</p>
+        </div>
+
+        <div class="world-block rv" style="transition-delay:.15s">
+          <div class="wb-lbl">The cost—on one truck</div>
+          <div class="cost-stack">
+            <div class="cost-line">
+              <span class="cost-n">$200–$1,000</span>
+              <span class="cost-l">Per bad load · reload time, fuel, missed delivery, the run that slips off the next day</span>
+            </div>
+            <div class="cost-line">
+              <span class="cost-n">2–4 / month</span>
+              <span class="cost-l">Bad loads per truck · stack errors, wrong sequence, blind dealer approach</span>
+            </div>
+            <div class="cost-line cost-line--key">
+              <span class="cost-n">$600–$4K / mo</span>
+              <span class="cost-l">Leaked per truck—every month, every year. Never shows up on a P&amp;L line.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="world-block rv" style="transition-delay:.2s">
+          <div class="wb-lbl">Why it hasn’t been solved</div>
+          <p class="wb-p">Carriers buy <strong>TMS, dispatch, and ELDs—for the office.</strong> Planning, yard routing, and dealer approach still live on paper and in memory. <strong>The buyer isn’t the person losing hours in the yard.</strong></p>
+        </div>
+
+        <div class="world-pull rv" style="transition-delay:.25s">
+          A high-frequency decision, under load, with money attached—<strong>and no system at the point of execution.</strong>
         </div>
       </div>
       <div class="bol-wrap rv" style="transition-delay:.15s">
@@ -806,26 +850,26 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
       <div class="leak">
         <div class="leak-lbl">Cost of one bad load</div>
         <div class="leak-n">$200–$1,000</div>
-        <div class="leak-math">Midpoint ≈ $500</div>
-        <div class="leak-sub">Reload time, fuel, a missed delivery window, the knock-on run that slips.</div>
+        <div class="leak-math">Reload, fuel, missed window</div>
+        <div class="leak-sub">A knock-on run that slips off the next day. Varies by route and vehicle.</div>
       </div>
       <div class="leak">
         <div class="leak-lbl">Per truck · per month</div>
-        <div class="leak-n">6–10</div>
-        <div class="leak-math">≈ 2 per week</div>
+        <div class="leak-n">2–4</div>
+        <div class="leak-math">≈ 1 per 1–2 weeks</div>
         <div class="leak-sub">Stack errors, wrong yard sequence, blind dealer approach. Normal on paper-and-memory workflow.</div>
       </div>
       <div class="leak leak--key">
         <div class="leak-lbl">Monthly leak · per truck</div>
-        <div class="leak-n">~$4,000</div>
-        <div class="leak-math">≈ 8 × $500</div>
+        <div class="leak-n">$600–$4K</div>
+        <div class="leak-math">2–4 × $200–$1K</div>
         <div class="leak-sub">Quiet, recurring, never shows up on a P&amp;L line item.</div>
       </div>
       <div class="leak">
         <div class="leak-lbl">Annualized · per truck</div>
-        <div class="leak-n">~$48K</div>
-        <div class="leak-math">$4K × 12</div>
-        <div class="leak-sub">Every truck. Every year. A 20-truck fleet quietly loses close to <strong>$1M</strong>.</div>
+        <div class="leak-n">$7K–$48K</div>
+        <div class="leak-math">Monthly leak × 12</div>
+        <div class="leak-sub">Every truck. Every year. A 20-truck fleet can leak close to <strong>$1M/yr</strong> at the upper end.</div>
       </div>
     </div>
 
