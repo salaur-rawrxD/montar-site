@@ -264,6 +264,25 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #problem{background:var(--surf)}
 .prob-hdr{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:2.5rem}
 @media(max-width:900px){.prob-hdr{grid-template-columns:1fr}}
+.leak-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1.25rem}
+.leak{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r16);padding:1.5rem;box-shadow:var(--e1);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s var(--ease)}
+.leak:hover{box-shadow:var(--e2);transform:translateY(-2px)}
+.leak::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--surf2)}
+.leak--key{background:var(--brand-lt);border-color:rgba(232,98,10,.22)}
+.leak--key::before{background:var(--brand);height:4px}
+.leak-lbl{font-family:var(--fm);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--on-d);font-weight:600;margin-bottom:.6rem}
+.leak--key .leak-lbl{color:var(--brand-dk)}
+.leak-n{font-family:var(--fd);font-size:clamp(1.6rem,2.4vw,2rem);font-weight:700;color:var(--on);line-height:1;letter-spacing:-.022em;margin-bottom:.5rem}
+.leak--key .leak-n{color:var(--brand-dk)}
+.leak-math{font-family:var(--fm);font-size:.66rem;color:var(--on-d);font-weight:500;margin-bottom:.55rem;letter-spacing:.01em}
+.leak--key .leak-math{color:var(--brand-dk);opacity:.72}
+.leak-sub{font-size:.78rem;color:var(--on-d);line-height:1.55}
+.leak--key .leak-sub{color:var(--brand-dk);opacity:.82}
+.leak-foot{font-size:.9rem;color:var(--on-v);line-height:1.65;margin:.5rem 0 2.5rem;max-width:60ch}
+.leak-foot strong{color:var(--on);font-weight:700}
+.leak-src-lbl{font-family:var(--fm);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--on-d);font-weight:600;margin:.25rem 0 1rem}
+@media(max-width:900px){.leak-row{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.leak-row{grid-template-columns:1fr}}
 .moments{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .moment{background:var(--surf);border:1px solid var(--surf2);border-radius:var(--r24);overflow:hidden;box-shadow:var(--e1);transition:box-shadow .2s,transform .2s var(--ease)}
 .moment:hover{box-shadow:var(--e3);transform:translateY(-3px)}
@@ -520,14 +539,14 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
   <div class="hr">
     <div class="hr-inner">
       <div class="h-stats">
-        <div class="hs"><div class="hs-n">$10.5B</div><div class="hs-l">US vehicle shipping market</div></div>
-        <div class="hs"><div class="hs-n">15.9M+</div><div class="hs-l">New units/yr (US) — TAM adds used &amp; POV</div></div>
-        <div class="hs"><div class="hs-n">4,500</div><div class="hs-l">US car hauling carriers</div></div>
-        <div class="hs"><div class="hs-n">$62B</div><div class="hs-l">US automotive logistics</div></div>
+        <div class="hs"><div class="hs-n">$200–$1K</div><div class="hs-l">Cost of a single bad load</div></div>
+        <div class="hs"><div class="hs-n">~$4K/mo</div><div class="hs-l">Quiet leak per truck (recoverable)</div></div>
+        <div class="hs"><div class="hs-n">~$48K/yr</div><div class="hs-l">Per truck, every year</div></div>
+        <div class="hs"><div class="hs-n">~$1M/yr</div><div class="hs-l">A 20-truck fleet’s unseen bill</div></div>
       </div>
       <div class="zero-card">
         <div class="zero-n">$0</div>
-        <div class="zero-d">Incumbents sell to the fleet office.<br><strong>Zero</strong> products built for<br>the driver’s workflow.</div>
+        <div class="zero-d">Spent today to fix this.<br><strong>Zero</strong> products built for<br>the driver’s workflow.</div>
       </div>
     </div>
   </div>
@@ -779,13 +798,44 @@ footer{background:#111;border-top:1px solid rgba(255,255,255,.06);padding:1.75re
 <section id="problem" class="sec">
   <div class="si">
     <div class="prob-hdr">
-      <div><h2 class="sh rv">Three leaks.<br><em>Every load.</em></h2></div>
-      <div class="rv" style="transition-delay:.1s"><p class="sb">There still isn’t purpose-built software for car-hauler execution—that’s the gap. <strong>These failures repeat because nothing runs in the cab with the driver.</strong></p></div>
+      <div><h2 class="sh rv">Mistakes aren’t<br><em>free.</em></h2></div>
+      <div class="rv" style="transition-delay:.1s"><p class="sb">Car haulers make dozens of load decisions a day. A few go wrong every month. Each one costs real money—reload time, wasted fuel, missed drops, a run that slips off the next day. <strong>Here’s the math on one truck.</strong></p></div>
     </div>
+
+    <div class="leak-row rv" aria-label="Per-truck monthly leak from bad loads">
+      <div class="leak">
+        <div class="leak-lbl">Cost of one bad load</div>
+        <div class="leak-n">$200–$1,000</div>
+        <div class="leak-math">Midpoint ≈ $500</div>
+        <div class="leak-sub">Reload time, fuel, a missed delivery window, the knock-on run that slips.</div>
+      </div>
+      <div class="leak">
+        <div class="leak-lbl">Per truck · per month</div>
+        <div class="leak-n">6–10</div>
+        <div class="leak-math">≈ 2 per week</div>
+        <div class="leak-sub">Stack errors, wrong yard sequence, blind dealer approach. Normal on paper-and-memory workflow.</div>
+      </div>
+      <div class="leak leak--key">
+        <div class="leak-lbl">Monthly leak · per truck</div>
+        <div class="leak-n">~$4,000</div>
+        <div class="leak-math">≈ 8 × $500</div>
+        <div class="leak-sub">Quiet, recurring, never shows up on a P&amp;L line item.</div>
+      </div>
+      <div class="leak">
+        <div class="leak-lbl">Annualized · per truck</div>
+        <div class="leak-n">~$48K</div>
+        <div class="leak-math">$4K × 12</div>
+        <div class="leak-sub">Every truck. Every year. A 20-truck fleet quietly loses close to <strong>$1M</strong>.</div>
+      </div>
+    </div>
+
+    <p class="leak-foot rv">Nobody writes this bill. Drivers absorb it in hours; fleets absorb it in missed runs. <strong>That’s why it compounds.</strong></p>
+
+    <div class="leak-src-lbl rv">Where the leak comes from</div>
     <div class="moments rv">
-      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">01</div><div class="m-lbl">The Yard</div><div class="m-ttl">Loading from memory, every time</div><div class="m-cost"><span class="m-ci">💸</span><span class="m-ct">$150–$300 lost when a vehicle doesn't fit and is left behind</span></div><p class="m-p">The driver receives a paper load sheet. No guidance on configuration, no weight check, no verification. When something goes wrong, vehicles get unloaded and reloaded. <strong>What should take 90 minutes takes half a day.</strong></p></div></div>
-      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">02</div><div class="m-lbl">The Hunt</div><div class="m-ttl">Navigating the yard without a route</div><div class="m-cost"><span class="m-ci">⏱</span><span class="m-ct">20–45 minutes lost per load walking the yard</span></div><p class="m-p">Bay codes on the load sheet are positions scattered across a facility spanning several city blocks. Some yards have a basic diagram. Most have painted rows on asphalt. <strong>None give the driver an optimized pickup route for their specific load.</strong></p></div></div>
-      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">03</div><div class="m-lbl">The Delivery</div><div class="m-ttl">Arriving blind at the dealer</div><div class="m-cost"><span class="m-ci">🗺</span><span class="m-ct">15–30 minutes lost per stop at an unfamiliar dealer</span></div><p class="m-p">The load sheet gives an address — not the entrance, the driveway, or how to position an 80-foot rig in a tight street. Experienced drivers know from memory. New drivers guess. <strong>Every wrong approach is income off the next run.</strong></p></div></div>
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">01</div><div class="m-lbl">The Yard</div><div class="m-ttl">Loading from memory, every time</div><div class="m-cost"><span class="m-ci">💸</span><span class="m-ct">$150–$300 lost when a vehicle doesn't fit and gets left behind</span></div><p class="m-p">The driver gets a paper load sheet—no configuration guidance, no weight check, no verification. When something goes wrong, vehicles get unloaded and reloaded. <strong>What should take 90 minutes takes half a day.</strong></p></div></div>
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">02</div><div class="m-lbl">The Hunt</div><div class="m-ttl">Walking the yard without a route</div><div class="m-cost"><span class="m-ci">⏱</span><span class="m-ct">20–45 minutes lost per load hunting bay codes</span></div><p class="m-p">Bay codes are positions scattered across a facility the size of several city blocks. Some yards have a basic diagram. Most have painted rows on asphalt. <strong>None give the driver an optimized route for their specific load.</strong></p></div></div>
+      <div class="moment"><div class="m-stripe"></div><div class="m-body"><div class="m-chip">03</div><div class="m-lbl">The Delivery</div><div class="m-ttl">Arriving blind at the dealer</div><div class="m-cost"><span class="m-ci">🗺</span><span class="m-ct">15–30 minutes lost per stop—plus curb hits and repositions</span></div><p class="m-p">The sheet gives an address—not the entrance, the driveway, or how to place an 80-foot rig on a tight street. Experienced drivers know from memory. New drivers guess. <strong>Every wrong approach is income off the next run.</strong></p></div></div>
     </div>
     <div class="pullquote rv"><div class="pq-mk">"</div><p class="pq-tx">One bad stack. A reload. Another unit that still doesn’t fit. A two-hour run turns into a five-hour fight—same HOS clock. That’s normal when software stops at dispatch.</p></div>
   </div>
